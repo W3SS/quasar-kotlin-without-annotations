@@ -1,0 +1,31 @@
+plugins {
+    id "nebula.kotlin" version "1.0.2"
+    id "application"
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile project(":support")
+
+    compile "co.paralleluniverse:quasar-core:0.7.5"
+    compile "co.paralleluniverse:quasar-kotlin:0.7.5"
+}
+
+classes {
+    doLast {
+        ant.taskdef(name:'instrumentation', classname:'co.paralleluniverse.fibers.instrument.InstrumentationTask', classpath: configurations.compile.asPath)
+        ant.instrumentation(verbose:'true', check:'true', debug:'true') {
+            fileset(dir: sourceSets.main.output.classesDir)
+        }
+    }
+}
+
+mainClassName = "com.example.MainKt"
+
+applicationDefaultJvmArgs = [
+        "-Dco.paralleluniverse.fibers.verifyInstrumentation=true",
+        "-Dco.paralleluniverse.debugMode=true",
+]
